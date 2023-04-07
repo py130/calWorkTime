@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <label for="begin">开始时间：</label>
+    <input type="time" class="worktime" id="begin" value="06:30">
+    <label for="end">结束时间：</label>
+    <input type="time" class="worktime" id="end" value="11:00">
+    <label for="ratio">干正事的时间比例：</label>
+    <input type="text" class="worktime" placeholder="0.8" id="ratio" value="0.8">
+    <p>干正事的时间（分钟）：<span id="workMinute"></span></p>
+    <p>截止时的时间（时:分）：<span id="workEndTime"></span></p>
+    <script>
+        function checkTime(i) {
+            if(i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+        function initTimeByDate(date) {
+            const hours = checkTime(date.getHours());
+            const minutes = checkTime(date.getMinutes());
+            const initTime = `${hours}:${minutes}`;
+            return initTime;
+        }
+        function calTime(id) {
+            const timeString = document.querySelector(`input[id="${id}"]`);
+            const timeValue = new Date("2020-02-02 "  + timeString.value);
+            return timeValue;
+        }
+        function calWorkMinute() {
+            timeBegin = calTime('begin');
+            timeEnd = calTime('end');
+            const timeDiff = timeEnd - timeBegin;
+            const ratio = parseFloat(document.querySelector('input[id="ratio"]').value)
+            const workMinute = Math.round(timeDiff/(1000*60)*ratio)
+            document.querySelector('span[id="workMinute"]').innerHTML = workMinute;
+            return workMinute;
+        }
+        // 初始化时间
+        const dateBegin = new Date();
+        const beginTime = initTimeByDate(dateBegin);
+        document.querySelector('input[id="begin"]').value = beginTime;
+        const dateEnd = new Date();
+        dateEnd.setHours(dateBegin.getHours() + 3);
+        const endTime = initTimeByDate(dateEnd);
+        document.querySelector('input[id="end"]').value = endTime;
+        // 计算需要工作的时间
+        document.querySelectorAll('input[class="worktime"]').forEach(item => {
+            console.log("hi")
+            item.addEventListener('input', e => {
+                console.log(`${item.id}正在输入${e.target.value}`);
+                // 计算需要工作的分钟数
+                const workMinute = calWorkMinute();
+                // 计算工作截止的时间
+                const workEndTimeStamp = calTime('begin').getTime() + workMinute*60*1000;
+                const workEndTime = initTimeByDate(new Date(workEndTimeStamp));
+                document.querySelector('span[id="workEndTime"]').innerHTML = workEndTime;
+            })
+            
+        })
+        
+    </script>
+</body>
+</html>
